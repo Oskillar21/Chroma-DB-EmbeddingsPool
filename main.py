@@ -25,7 +25,7 @@ for file_name, content in documents:
             embeddings=[embedding],
             ids=[file_name]
         )
-        print(f"Documento {file_name} agregado a la colección.")
+        print(f"Documento: {file_name} agregado a la colección.")
         print(f"-------------------------------")
     except Exception as e:
         print(f"⚠️ Error al agregar {file_name} a la colección: {e}")
