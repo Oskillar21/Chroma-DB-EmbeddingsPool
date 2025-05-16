@@ -1,36 +1,45 @@
-from utils.file_loader import load_documents_from_folder
+# main.py
+
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from utils.file_loader import extract_text_from_pdf, extract_text_from_docx
 from embeddings.generator import Embedder
-from database.chroma_client import get_chroma_client, get_or_create_collection
+from services.sender import send_embedding_to_api
 
-# Cargar documentos desde carpeta
-documents = load_documents_from_folder("data")
-print(f"📄 Documentos encontrados: {len(documents)}")
-print(f"-------------------------------")
-
-# Inicializar modelo de embeddings
+app = FastAPI()
 embedder = Embedder()
 
-# Inicializar cliente de Chroma
-client = get_chroma_client()
-collection = get_or_create_collection(client)
-
-# Procesar documentos y guardar embeddings
-for file_name, content in documents:
-    print(f"🔍 Procesando {file_name}")
-    embedding = embedder.embed([content])[0]
-    print(f"Embedding generado para {file_name}: {embedding[:5]}")  # Resumen del embedding
+@app.post("/process-documents")
+async def process_documents(file: UploadFile = File(...)):
     try:
-        collection.add(
-            documents=[content],
-            embeddings=[embedding],
-            ids=[file_name]
-        )
-        print(f"Documento: {file_name} agregado a la colección.")
-        print(f"-------------------------------")
+        # Verifica extensión
+        if not (file.filename.endswith(".pdf") or file.filename.endswith(".docx")):
+            raise HTTPException(status_code=400, detail="Tipo de archivo no soportado")
+
+        # Lee contenido del archivo
+        contents = await file.read()
+        with open(f"temp_{file.filename}", "wb") as f:
+            f.write(contents)
+
+        # Extrae texto
+        if file.filename.endswith(".pdf"):
+            text = extract_text_from_pdf(f"temp_{file.filename}")
+        else:
+            text = extract_text_from_docx(f"temp_{file.filename}")
+
+        # Genera embedding
+        embedding = embedder.embed([text])[0]
+
+        # Metadata opcional
+        metadata = {
+            "filename": file.filename,
+            "length": str(len(text))
+        }
+
+        # Envía a segunda API
+        response = send_embedding_to_api(file.filename, embedding, metadata)
+
+        return JSONResponse(content={"message": "Embedding procesado y enviado", "response": response})
+
     except Exception as e:
-        print(f"⚠️ Error al agregar {file_name} a la colección: {e}")
-
-# Guardar la colección en Chroma y finalizacion del proceso
-print("✅ Proceso de indexación completado.")
-
-
+        raise HTTPException(status_code=500, detail=str(e))
