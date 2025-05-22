@@ -3,7 +3,8 @@
 import requests
 
 def send_embedding_to_api(document_id: str, embedding: list[float], metadata: dict):
-    url = "http://127.0.0.1:8002/store_embedding"  # Cambia esto si la otra API está en otro host o puerto
+    #Cambio en esta linea para que me funcione con la otra api 
+    url = "http://api-load:8002/store_embedding" 
     payload = {
         "id": document_id,
         "embedding": embedding,
