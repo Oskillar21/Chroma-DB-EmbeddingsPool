@@ -1,34 +1,28 @@
-# Chroma-Tests
-
-Pequeño ejercicio sobre el uso de bases de datos vectoriales con Python y ChromaDB
-
-#Dependencias:
-
-pip install chromadb sentence-transformers python-docx PyMuPDF
 
 ---
 
-Cuando descarguen los cambios de la rama ejecutar el siguiente comando para que le instale todas las dependencias necesarias del proyecto.
+### 📚 `Chroma-DB-EmbeddingsPool` → `README.md`
 
-python -m venv venv ///hace un entorno virtual necesario para que corran las APIs
-venv\Scripts\activate /// activa el entorno virtual
-pip install -r requirements.txt /// instala dependencias
-deactivate /// para desactivar el venv
+```markdown
+# Chroma-DB-EmbeddingsPool
 
-uvicorn main:app --reload --port 8001 /// levantar la API (Con el venv activado)
+Servicio en FastAPI que permite cargar documentos y generar embeddings utilizando `sentence-transformers`, para luego almacenarlos en ChromaDB. Ideal para pruebas o proyectos pequeños.
 
-http://127.0.0.1:8001/docs#/ /// direccion para que abra swagger
-http://127.0.0.1:8001/process-documents /// Solicitud POST en postman
-PD: Poner localhost si gustan xd, asi lo tiro chat jjj
+## Características
 
-Estructura JSON a utilizar
+- Procesamiento de PDFs, DOCX y otros
+- Generación de embeddings con modelos de lenguaje
+- Almacenamiento en base de datos vectorial ChromaDB
 
-{
-"id": "pruebaaaa",
-"embedding": [
-0.1, 0.2, 0.3
-],
-"metadata": {
-"source": "test"
-}
-}
+## Instalación y uso
+
+```bash
+# Crear entorno virtual (opcional)
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar el servidor
+uvicorn main:app --reload --port 8001
