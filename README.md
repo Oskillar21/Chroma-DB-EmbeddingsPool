@@ -1,9 +1,4 @@
 
----
-
-### 📚 `Chroma-DB-EmbeddingsPool` → `README.md`
-
-```markdown
 # Chroma-DB-EmbeddingsPool
 
 Servicio en FastAPI que permite cargar documentos y generar embeddings utilizando `sentence-transformers`, para luego almacenarlos en ChromaDB. Ideal para pruebas o proyectos pequeños.
